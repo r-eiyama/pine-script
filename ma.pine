@@ -5,7 +5,11 @@
 study(title = "移動平均線", shorttitle = "MA", precision = 1, overlay = true)
 
 // input関数で変数値入力可能
-length = input(type = integer, title = "移動平均線の日数（整数）", defval = 5, minval = 1, maxval = 200, step = 1)
+length1 = input(type = integer, title = "MAの日数(短)", defval = 25, minval = 1, maxval = 200, step = 1)
+
+length2 = input(type = integer, title = "MAの日数(中)", defval = 75, minval = 1, maxval = 200, step = 1)
+
+length3 = input(type = integer, title = "MAの日数(長)", defval = 200, minval = 1, maxval = 200, step = 1)
 
 // ソースを選択させる
 s = input(type = source, title = "ソースの選択", defval = close)
@@ -17,7 +21,20 @@ movingAverage(data, length) =>
         total := total + data[i]
     total / length
 
-ma = movingAverage(s, length)
+ma1 = movingAverage(s, length1)
+ma2 = movingAverage(s, length2)
+ma3 = movingAverage(s, length3)
 
 // 移動平均線をplot
-plot(ma, title="移動平均線", style = line, color = red, linewidth = 2)
+plot(ma1, title="移動平均線", style = line, color = red, linewidth = 2)
+plot(ma2, title="移動平均線", style = line, color = green, linewidth = 2)
+plot(ma3, title="移動平均線", style = line, color = blue, linewidth = 2)
+
+// パーフェクトオーダー
+isPerfectOrder = (close > ma1 and ma1 > ma2 and ma2 > ma3)
+isPOChange = isPerfectOrder[1] == false and isPerfectOrder[0] == true
+
+// isPOChangeがtrueの地点に吹き出しを表示
+loctop = location.top
+plotshape(isPOChange, location = loctop, style = shape.labeldown, text = "PO", color = red, textcolor = white)
+
