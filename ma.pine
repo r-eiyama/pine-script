@@ -1,7 +1,23 @@
-//@version=4
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // © yamino
 
-study(title="移動平均線", shorttitle="MA", precision=1, overlay=true)
+//@version=3
+study(title = "移動平均線", shorttitle = "MA", precision = 1, overlay = true)
 
-plot(close)
+// input関数で変数値入力可能
+length = input(type = integer, title = "移動平均線の日数（整数）", defval = 5, minval = 1, maxval = 200, step = 1)
+
+// ソースを選択させる
+s = input(type = source, title = "ソースの選択", defval = close)
+
+
+movingAverage(data, length) =>
+    total = data
+    for i = 1 to length - 1
+        total := total + data[i]
+    total / length
+
+ma = movingAverage(s, length)
+
+// 移動平均線をplot
+plot(ma, title="移動平均線", style = line, color = red, linewidth = 2)
