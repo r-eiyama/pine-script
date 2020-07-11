@@ -1,0 +1,78 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © yamino
+
+//@version=3
+strategy("backtest", overlay=true)
+
+//バックテストをする期間
+fromYear = input(2019 ,type=integer ,minval=1900 ,title="test start")
+endYear  = input(2020 ,type=integer ,minval=1900 ,title="test end")
+isWork   = timestamp(fromYear ,1 ,1 ,00 ,00) <= time and time < timestamp(endYear ,12,31 ,00 ,00) 
+
+// ポジションの有無
+posi     = strategy.position_size != 0
+no_posi  = strategy.position_size == 0
+// ポジションサイズ
+posi_l = strategy.position_size > 0
+posi_s = strategy.position_size < 0
+
+//取引日数を数える
+countTradingDays = na
+countNonTradingDays = na
+countTradingDays := not posi ? 0 : countTradingDays[1] + 1
+countNonTradingDays := posi     ? 0 : countNonTradingDays[1] + 1
+
+// plot(countTradingDays    ,transp=0 ,title="取引日数")
+// plot(countNonTradingDays ,transp=0 ,title="ノンポジ日数")
+
+//48期間の中で最高値・最安値
+length = 48
+h_line = highest(length) 
+l_line = lowest(length)
+diff = h_line - l_line
+//高値ー安値から何％変動したか
+f39 = (diff*0.39) + l_line
+f50 = (diff*0.5) + l_line
+f61 = (diff*0.61) + l_line
+// plot(f50,linewidth=1,color=#ffd700,transp=50)
+// plot(f39,linewidth=1,color=#81d8d0,transp=50)
+// plot(f61,linewidth=1,color=#ffa594,transp=50)
+plot(l_line, title="安値", color=red, transp=0, style=linebr)
+plot(h_line, title="高値", color=blue, transp=0, style=linebr)
+
+//entrySignal
+entry_l = low < f39 and high > f39 and open > close 
+entry_s = low < f61 and high > f61 and open < close
+
+//closeSignal
+//ロングポジション:高値を超えた場合
+close_l =  high == h_line
+//ショートポジション:安値を超えた場合
+close_s =  low == l_line
+
+//cutSignla
+//ロングポジション:安値を更新
+cut_l = low == l_line
+//ショートポジション:高値を更新
+cut_s = high == h_line
+
+//trade
+//ここから下はストラテジーなので触らない
+L_EntrySig = isWork and entry_l and no_posi
+S_EntrySig = isWork and entry_s and no_posi
+L_CloseSig = isWork and close_l and posi_l
+S_CloseSig = isWork and close_s and posi_s
+L_CutSig = isWork and cut_l and posi_l
+S_CutSig = isWork and cut_s and posi_s
+
+//ストラテジーを設定
+strategy.entry(id = "Long", long = true,  when = L_EntrySig)
+strategy.close(id = "Long", when = L_CloseSig)
+strategy.close(id = "Long", when = L_CutSig)
+strategy.entry(id = "Short", long = false,  when = S_EntrySig)
+strategy.close(id = "Short", when = S_CloseSig)
+strategy.close(id = "Short", when = S_CutSig)
+bgcolor(color
+  = not isWork ? red
+  : na
+  ,transp=70 ,title="背景色")
