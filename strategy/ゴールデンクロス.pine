@@ -1,0 +1,85 @@
+//@version=4
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © yamino
+
+strategy("移動平均線戦略", overlay=true)
+
+//バックテストをする期間
+fromYear = input(2019, type=input.integer, minval=1900, title="test start")
+endYear = input(2020, type=input.integer, minval=1900, title="test end")
+isWork = timestamp(fromYear, 1, 1, 00, 00) <= time and 
+   time < timestamp(endYear, 12, 31, 00, 00)
+
+
+// ポジションの有無
+posi = strategy.position_size != 0
+no_posi = strategy.position_size == 0
+// ポジションサイズ
+posi_l = strategy.position_size > 0
+posi_s = strategy.position_size < 0
+
+//取引日数を数える
+// countTradingDays = na
+// countNonTradingDays = na
+// countTradingDays := not posi ? 0 : countTradingDays[1] + 1
+// countNonTradingDays := posi     ? 0 : countNonTradingDays[1] + 1
+
+// ロジック部分
+// input関数で変数値入力可能
+length1 = input(type = input.integer, title = "MAの日数(短)", defval = 25, minval = 1, maxval = 200, step = 1) //短期
+length2 = input(type = input.integer, title = "MAの日数(中)", defval = 75, minval = 1, maxval = 200, step = 1) //中期
+length3 = input(type = input.integer, title = "MAの日数(長)", defval = 200, minval = 1, maxval = 200, step = 1) //長期
+
+// ソースを選択させる
+s = input(type = input.source, title = "ソースの選択", defval = close)
+
+
+movingAverage(data, length) =>
+    total = data
+    for i = 1 to length - 1
+        total := total + data[i]
+    total / length
+
+ma1 = movingAverage(s, length1)
+ma2 = movingAverage(s, length2)
+// ma3 = movingAverage(s, length3)
+
+// 移動平均線をplot
+plot(ma1, title="移動平均線", color = color.red, linewidth = 2)
+plot(ma2, title="移動平均線", color = color.green, linewidth = 2)
+// plot(ma3, title="移動平均線", color = blue, linewidth = 2)
+
+//エントリー条件
+entry_l = crossover(ma1, ma2)
+//クローズ条件
+close_l = crossunder(ma1, ma2)
+// cut_l = crossunder(ma1, ma2)
+
+// //残高の計算
+// balance = strategy.initial_capital + strategy.netprofit
+// // スタート時の資金を描画
+// plot( strategy.initial_capital )
+// // 残高の描画
+// plot( balance )
+
+
+//trade
+//ここから下はストラテジーなので触らない
+L_EntrySig = isWork and entry_l and no_posi
+L_CloseSig = isWork and close_l and posi_l
+// L_CutSig = isWork and cut_l and posi_l
+
+//ストラテジーを設定
+strategy.entry(id = "Long", long = true,  when = L_EntrySig)
+strategy.close(id = "Long", when = L_CloseSig)
+// strategy.close(id = "Long", when = L_CutSig)
+
+//背景設定
+bgcolor(color
+  = not isWork ? color.red
+  : na
+  ,transp=70 ,title="背景色")
+
+
+
+
