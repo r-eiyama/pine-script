@@ -1,0 +1,19 @@
+//@version=4
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © yamino
+
+study("ボリンジャーバンドを表示する", overlay=true)
+
+price = input(close, title="計算の対象")
+length = input(20, title="算出する期間")
+sma = sma(price, length)
+// 標準偏差
+dev = stdev(price, length)
+
+plot(sma)
+plot(sma + dev, color=color.green)
+plot(sma + dev * 2, color=color.red)
+plot(sma + dev * 3, color=color.purple)
+plot(sma - dev, color=color.green)
+plot(sma - dev * 2, color=color.red)
+plot(sma - dev * 3, color=color.purple)

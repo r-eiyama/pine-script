@@ -1,0 +1,25 @@
+//@version=4
+//Pineのバージョンとインジケーターの宣言
+study("ハイローバンドを表示する", overlay=true)
+
+//設定項目を指定し、その初期値を変数に格納
+length = input(25, title="計算する期間")
+
+//変数 length に格納されている期間中の最高値
+highest = highest(high, length)
+
+//最安値と中間
+lowest = lowest(low, length)
+middle = (highest + lowest) / 2
+
+//最高値と最安値を変数に格納しつつチャートに描画
+//offsetでplotの位置を左右にずらせる
+//今回は1本前の計算値に対するブレイクアウトを見るために1本分ずらしている
+p1 = plot(highest, offset=1)
+p2 = plot(lowest, offset=1)
+
+//中間をチャートに描画
+plot(middle, offset=1, color=color.red)
+
+//最高値と最安値の間を塗りつぶす
+fill(p1, p2)

@@ -1,0 +1,21 @@
+//@version=4
+study("出来高加重移動平均（VWMA）を表示する", overlay=true)
+
+//設定項目の指定し、値を変数に格納する
+price = input(close, title="MAの対象")
+length1 = input(25, title="MAの期間①")
+length2 = input(75, title="MAの期間①")
+
+//変数をもとに移動平均を算出し、新たな変数に格納
+//「A ? B : C」は三項演算子（Aが成り立つならB、そうでないならC）
+//ここでは、volume の数値が確認できたら vwma ( ) 、できないなら ema ( ) としている
+vwma_1 = vwma(price, length1)
+ema_1 = ema(price, length1)
+ma1 = sma(volume, length1) > 0 ? vwma_1 : ema_1
+vwma_2 = vwma(price, length2)
+ema_2 = ema(price, length2)
+ma2 = sma(volume, length2) > 0 ? vwma_2 : ema_2
+
+//算出した数値を描画する
+plot(ma1, color=color.red)
+plot(ma2)

@@ -1,0 +1,24 @@
+//@version=4
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © yamino
+
+study("EMAの間を塗りつぶす", overlay=true)
+
+price = input(close, title="EMAの対象")
+
+length1 = input(5, title="EMA1の期間")
+length2 = input(25, title="EMA2の期間")
+length3 = input(75, title="EMA3の期間")
+
+// 変更点①
+ema1 = ema(price, length1)
+ema2 = ema(price, length2)
+ema3 = ema(price, length3)
+
+// 変更点②
+p1 = plot(ema1, color=color.red)
+p2 = plot(ema2, color=color.blue)
+p3 = plot(ema3, color=color.green)
+
+// 変更点③
+fill(p2, p3, color=ema2 > ema3 ? color.blue : color.green)

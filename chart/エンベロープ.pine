@@ -1,0 +1,23 @@
+//@version=4
+study("エンベロープを表示する", overlay=true)
+
+price = input(close, title="EMAの対象")
+length = input(75, title="EMAの期間")
+
+ema = ema(price, length)
+
+plot(ema + ema * 0.4, linewidth=2)
+plot(ema + ema * 0.3)
+plot(ema + ema * 0.2, transp=75)
+plot(ema + ema * 0.15)
+plot(ema + ema * 0.10, transp=75)
+plot(ema + ema * 0.05, color=color.red)
+
+plot(ema, color=color.red)
+
+plot(ema - ema * 0.05, color=color.red)
+plot(ema - ema * 0.10, transp=75)
+plot(ema - ema * 0.15)
+plot(ema - ema * 0.2, transp=75)
+plot(ema - ema * 0.3)
+plot(ema - ema * 0.4, linewidth=2)
