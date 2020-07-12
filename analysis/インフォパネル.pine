@@ -1,0 +1,8 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © yamino
+
+//@version=4
+study( "labelでインフォパネルを表示する", overlay=true )
+var label l = na
+label.delete(l)
+l := label.new( timenow + round(change(time)*15), close, xloc=xloc.bar_time, yloc=yloc.price, style=label.style_labelup, text="label test\n\n\n\nx="+tostring(bar_index)+"\ny="+tostring(close) )

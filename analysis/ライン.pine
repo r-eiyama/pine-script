@@ -1,0 +1,37 @@
+//@version=4
+study( "ラインとラベルを組み合わせる", overlay=true )
+
+// 20日間の高値、安値、均衡点を算出
+H = highest( high ,20 )[1]
+L = lowest( low ,20 )[1]
+M = ( H + L ) / 2
+
+// lineの宣言
+var line h = na
+var line m = na
+var line l = na
+
+// 古いものがあれば削除
+line.delete( h )
+line.delete( m )
+line.delete( l )
+
+// lineを描画
+h := line.new( x1=bar_index[20] ,y1=H ,x2=bar_index ,y2=H, extend=extend.right )
+m := line.new( x1=bar_index[20]  ,y1=M ,x2=bar_index ,y2=M, extend=extend.right )
+l := line.new( x1=bar_index[20]  ,y1=L ,x2=bar_index ,y2=L, extend=extend.right )
+
+// labelを宣言
+var label label_h = na
+var label label_m = na
+var label label_l = na
+
+// 古いものは削除
+label.delete( label_h )
+label.delete( label_m )
+label.delete( label_l )
+
+// labelを描画
+label_h := label.new( bar_index[20]  ,H , style=label.style_none, text="high20" )
+label_m := label.new( bar_index[20]  ,M , style=label.style_none, text="middle20" )
+label_l := label.new( bar_index[20]  ,L , style=label.style_none, text="low20" )
